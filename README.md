@@ -29,6 +29,7 @@ Usage is modeled after the native syntax for writing to files in python. We do
 not yet support `with` blocks.
 
 ```python
+import numpy as np
 from mp4writer import MP4Writer
 
 # 150 512x512 frames with gaussian noise in each RGB channel:
