@@ -10,8 +10,8 @@ or matplotlib figures, viewable with QuickTime Player on a recent Mac.
 * matplotlib
 * ffmpeg
 
-After installing these dependencies, clone this repository and add it to your
-`PYTHONPATH` with
+After installing these dependencies, you can add this repo to your `PYTHONPATH`
+with
 ```
 export PYTHONPATH=PATH_TO_MP4WRITER:$PYTHONPATH
 ```
@@ -20,8 +20,9 @@ And check the output of `env` to make sure the change has been made.
 You can also put the above line in your `~/.bash_profile` or other config file
 to make this environment change permanent.
 
-Of course, you can also just download the `mp4writer.py` file to wherever you
-want to import it.
+Alternatively, this repo will work as a package in a larger project, with the
+same usage. Finally, of course, you can also just download the `mp4writer.py`
+file to wherever you want to import it.
 
 ## Usage
 
