@@ -1,10 +1,12 @@
 """A video writer class for feeding in numpy frames or even matplotlib figures
-(which are converted to numpy). Writes video in grayscale or rgba uint8 format."""
+(which are converted to numpy). Writes video in grayscale or rgba uint8
+format.
+
+"""
 
 import numpy as np
 import subprocess as sp
 import logging
-import os
 import matplotlib.pyplot as plt
 
 logger = logging.getLogger('mp4writer')
@@ -15,6 +17,7 @@ logger.addHandler(handler)
 
 logger.debug(f"Use Python{3.6} or higher.")
 
+
 class MP4Writer:
   def __init__(self, fname, shape=None, fps=30, bitrate=40000):
     """Write frames to a video.
@@ -22,11 +25,13 @@ class MP4Writer:
     If shape is provided, opens the process here. Otherwise, process is opened
     on the first call to `write()`.
 
+    Higher bitrate means less compression. Default is 40000, which is pretty
+    detailed.
+
     :param fname: file to write the mp4 to
-    :param shape: (optional) shape of the video. For rgb, include number of channels.
+    :param shape: (optional) shape of the video.
     :param fps: frames per second. Default is 30.
-    :param bitrate: bitrate in kilobits, controlling compression. Higher bitrate 
-    means less compression. Default is 40000, which is pretty detailed.
+    :param bitrate: bitrate in kilobits, controlling compression.
 
     """
     self.fname = fname
@@ -35,13 +40,13 @@ class MP4Writer:
     self.bitrate = int(bitrate)
     if shape is not None:
       self.open(shape)
-      
+
   def open(self, shape):
     """FIXME! briefly describe function
 
-    :param shape: 
-    :returns: 
-    :rtype: 
+    :param shape:
+    :returns:
+    :rtype:
 
     """
     self.shape = tuple(shape)
@@ -61,7 +66,7 @@ class MP4Writer:
       '-y',                     # overwrite existing file
       '-f', 'rawvideo',
       '-vcodec', 'rawvideo',
-      '-s', f'{self.shape[1]}x{self.shape[0]}', # WxH
+      '-s', f'{self.shape[1]}x{self.shape[0]}',  # WxH
       '-pix_fmt', fmt,                          # byte format
       '-r', str(self.fps),                      # frames per second
       '-i', '-',                                # input from pipe
@@ -73,7 +78,7 @@ class MP4Writer:
     logger.info(' '.join(cmd))
     self.log = open(self.fname.split('.')[0] + '.log', 'w')
     self.proc = sp.Popen(cmd, stdin=sp.PIPE, stderr=self.log)
-    
+
   def write(self, frame):
     """Write the frame to video.
 
@@ -81,14 +86,14 @@ class MP4Writer:
     write, opens a ffmpeg process.
 
     Converts frame to uint8. If an integer type, performs a simple cast. If a
-    float type, assumes the image is in range [0,1] and quantizes values to this
-    range.
+    float type, assumes the image is in range [0,1] and quantizes values to
+    this range.
 
     :param frame: a numpy array of the proper shape.
     :returns: nothing
 
     """
-    
+
     if self.shape is None:
       self.open(frame.shape)
     frame = self.as_uint(frame)
@@ -107,7 +112,7 @@ class MP4Writer:
     self.write(np.array(fig.canvas.renderer._renderer))
     if close:
       plt.close()
-    
+
   def close(self):
     self.proc.stdin.close()
     self.proc.wait()
@@ -119,18 +124,17 @@ class MP4Writer:
     """Scale to uint8, clipping values outside the valid range. Assumes that
     float frames are in range [0,1].
 
-    :param image: 
-    :returns: 
-    :rtype: 
-    
+    :param image:
+    :returns:
+    :rtype:
+
     """
     if image.dtype == np.uint8:
       return image
     elif image.dtype in [np.float32, np.float64]:
-      image = (255*np.clip(image, 0, 1.0)).astype(np.uint8)
+      image = (255 * np.clip(image, 0, 1.0)).astype(np.uint8)
     elif image.dtype in [np.int32, np.int64]:
       image = np.clip(image, 0, 255).astype(np.uint8)
     else:
       raise ValueError(f"image dtype '{image.dtype}' not allowed")
     return image
-
